@@ -2,16 +2,16 @@
 #define EXPRESSION_H
 #include <string>
 
-class Expression {
+template <typename T> class Expression {
 	public:
 		virtual ~Expression ();
 		virtual void prettyprint () = 0;
-		virtual void set (std::string var, int val) = 0;
+		virtual void set (std::string var, T val) = 0;
 		virtual void unset (std::string var) = 0;
-		virtual int evaluate () = 0;
+		virtual T evaluate () = 0;
 };
 
-class Binary : public Expression {
+template <typename T> class Binary : public Expression {
 	public:
 		Expression *value1;
 		Expression *value2;
@@ -19,12 +19,12 @@ class Binary : public Expression {
 		Binary(Expression *value1, Expression *value2, std::string type);
 		~Binary ();
 		void prettyprint ();
-		void set (std::string var, int val);
+		void set (std::string var, T val);
 		void unset (std::string var);
-		int evaluate ();
+		T evaluate ();
 };
 
-class Unary : public Expression {
+template <typename T> Unary : public Expression {
 	public:
 		Expression *value1;
 		std::string type;
@@ -33,30 +33,30 @@ class Unary : public Expression {
 		void prettyprint ();
 		void set (std::string var, int val);
 		void unset (std::string var);
-		int evaluate ();
+		T evaluate ();
 };
 
-class Variable : public Expression {
+template <typename T> class Variable : public Expression {
 	public:
-		int value1;
+		T value1;
 		const std::string name;
 		bool st; 
-		Variable (int value1, std::string name, bool st);
+		Variable (T value1, std::string name, bool st);
 		~Variable ();
 		void prettyprint ();
-		void set (std::string var, int val);
+		void set (std::string var, T val);
 		void unset (std::string var);
-		int evaluate ();
+		T evaluate ();
 };
 
-class Integer: public Expression {
+template <typename T> class Value: public Expression {
 	public:
-		int value1;
-		Integer (int value1);
-		~Integer ();
+		T value1;
+		Value (T value1);
+		~Value ();
 		void prettyprint ();
-		void set (std::string var, int val);
+		void set (std::string var, T val);
 		void unset (std::string var);
-		int evaluate ();
+		T evaluate ();
 };
 #endif

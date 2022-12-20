@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -Wall -MMD -Werror=vla
+CXXFLAGS=-std=c++17 -Wall -MMD -Werror=vla
 OBJECTS=main.o expression.o stack.o
 DEPENDS=${OBJECTS:.o=.d} 
 EXEC=RPN
