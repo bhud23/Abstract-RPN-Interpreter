@@ -2,10 +2,6 @@
 #include <iostream>
 #include <stdexcept>
 
-Expression::~Expression () {
-	return; // do nothing
-}
-
 // for Binary sub-expression
 Binary::Binary (Expression *value1, Expression *value2, std::string type): 
 	value1{value1}, value2{value2}, type{type} {}
@@ -23,7 +19,7 @@ void Binary::prettyprint () {
 	std::cout << ")";
 }
 
-void Binary::set (std::string var, int val) {
+void Binary::set (std::string var, float val) {
 	value1->set(var, val);
 	value2->set(var, val);
 }
@@ -33,7 +29,7 @@ void Binary::unset (std::string var) {
 	value2->unset(var);
 }
 
-int Binary::evaluate () {
+float Binary::evaluate () {
 	if (type == "+") return value1->evaluate() + value2->evaluate();
 	else if (type == "-") return value1->evaluate() - value2->evaluate();
 	else if (type == "*") return value1->evaluate() * value2->evaluate();
@@ -60,7 +56,7 @@ void Unary::prettyprint () {
 	}
 }
 
-void Unary::set (std::string var, int val) {
+void Unary::set (std::string var, float val) {
 	value1->set(var, val);
 }
 
@@ -68,16 +64,16 @@ void Unary::unset (std::string var) {
 	value1->unset(var);
 }
 
-int Unary::evaluate () {
+float Unary::evaluate () {
 	if (type == "abs") {
-		int temp = value1->evaluate();
+		float temp = value1->evaluate();
 		return (temp < 0 ? -temp : temp);
 	}
 	else return -(value1->evaluate());
 }
 
 // for variable sub-expression
-Variable::Variable (int value1, std::string name, bool st): 
+Variable::Variable (float value1, std::string name, bool st): 
 	value1{value1}, name{name}, st{st} {}
 
 Variable::~Variable () {
@@ -89,7 +85,7 @@ void Variable::prettyprint () {
 	else std::cout << value1; 
 }
 
-void Variable::set (std::string var, int val) {
+void Variable::set (std::string var, float val) {
 	if (name == var) {
 		st = true;
 		value1 = val;
@@ -100,31 +96,60 @@ void Variable::unset (std::string var) {
 	if (name == var) st = false;
 }
 
-int Variable::evaluate () {
+float Variable::evaluate () {
 	if (st) return value1;
 	else throw std::invalid_argument (name);
 }
 
-// for Integer sub-expression
-Integer::Integer (int value1): 
+// for Value sub-expression
+Value::Value (float value1): 
 	value1{value1} {}
 
-Integer::~Integer () {
+Value::~Value () {
 	return; // do nothing
 }
 
-void Integer::prettyprint () {
+void Value::prettyprint () {
 	std::cout << value1;
 }
 
-void Integer::set (std::string var, int val) {
+void Value::set (std::string var, float val) {
 	return;
 }
 
-void Integer::unset (std::string var) {
+void Value::unset (std::string var) {
 	return;
 }
 
-int Integer::evaluate () {
+float Value::evaluate () {
 	return value1;
 }
+
+
+// for intepreter
+Interpreter::Interpreter ():
+	expr{nullptr} {}
+
+Interpreter::Interpreter (std::istream &in, std::ostream &out = std::cout):
+	expr{nullptr}, in{in}, out{out} {}
+
+
+float Interpreter::evaluate () {
+	try {
+		float res = expr->evaluate();
+		return res;
+	} catch (...) {
+		throw;
+	}
+}
+
+void Interpreter::set_var (std::string var, float val) {
+	if (expr == nullptr) return;
+	expr->set(var, val);
+}
+
+void Interpreter::unset_var (std::string var) {
+	if (expr == nullptr) return;
+	expr->unset(var);
+}
+

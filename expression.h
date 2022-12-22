@@ -1,62 +1,82 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 #include <string>
+#include <iostream>
+#include "stack.h"
 
-template <typename T> class Expression {
+class segmentation_fault;
+
+class Expression {
 	public:
-		virtual ~Expression ();
+		virtual ~Expression () = default;
 		virtual void prettyprint () = 0;
-		virtual void set (std::string var, T val) = 0;
+		virtual void set (std::string var, float val) = 0;
 		virtual void unset (std::string var) = 0;
-		virtual T evaluate () = 0;
+		virtual float evaluate () = 0;
 };
 
-template <typename T> class Binary : public Expression {
+class Binary : public Expression {
 	public:
 		Expression *value1;
 		Expression *value2;
 		std::string type;
-		Binary(Expression *value1, Expression *value2, std::string type);
+		Binary (Expression *value1, Expression *value2, std::string type);
 		~Binary ();
 		void prettyprint ();
-		void set (std::string var, T val);
+		void set (std::string var, float val);
 		void unset (std::string var);
-		T evaluate ();
+		float evaluate ();
 };
 
-template <typename T> Unary : public Expression {
+class Unary : public Expression {
 	public:
 		Expression *value1;
 		std::string type;
 		Unary (Expression *value1, std::string type);
 		~Unary ();
 		void prettyprint ();
-		void set (std::string var, int val);
+		void set (std::string var, float val);
 		void unset (std::string var);
-		T evaluate ();
+		float evaluate ();
 };
 
-template <typename T> class Variable : public Expression {
+class Variable : public Expression {
 	public:
-		T value1;
+		float value1;
 		const std::string name;
 		bool st; 
-		Variable (T value1, std::string name, bool st);
+		Variable (float value1, std::string name, bool st);
 		~Variable ();
 		void prettyprint ();
-		void set (std::string var, T val);
+		void set (std::string var, float val);
 		void unset (std::string var);
-		T evaluate ();
+		float evaluate ();
 };
 
-template <typename T> class Value: public Expression {
+class Value: public Expression {
 	public:
-		T value1;
-		Value (T value1);
+		float value1;
+		Value (float value1);
 		~Value ();
 		void prettyprint ();
-		void set (std::string var, T val);
+		void set (std::string var, float val);
 		void unset (std::string var);
-		T evaluate ();
+		float evaluate ();
 };
+
+class Interpreter {
+	private:
+		std::istream &in = std::cin;
+		std::ostream &out = std::cout;
+		Expression *expr;
+	public:
+		Interpreter ();
+		Interpreter (std::istream &in, std::ostream &out);
+		float evaluate ();
+		void read_expression ();
+		void display ();
+		void set_var (std::string var, float val);
+		void unset_var (std::string var);
+};
+
 #endif

@@ -2,7 +2,8 @@
 #define STACK_H
 
 #include <vector>
-#include "expression.h"
+
+class Expression;
 
 class Stack {
 	public:
